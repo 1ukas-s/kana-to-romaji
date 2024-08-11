@@ -7,39 +7,37 @@ function kanaToRomaji(str) {
 	// ([んン][ぁ-おァ-オゃ-よャ-ヨ])
 	// step 4: long vowels and long consonants
 	// ([ーっッ])
-	let groups = str.split(/([^\u3040-\u30FF])/);
-	for (let i in groups) {
-		groups[i] = groups[i].replaceAll(/[しじシジちぢチヂ][ゃゅょャュョ]/g, individualKanaToRomaji);
-		groups[i] = groups[i].replaceAll(/(?![しじシジちぢチヂ])[\u3040-\u30FF][ゃゅょャュョ]/g, individualKanaToRomaji);
-		groups[i] = groups[i].replaceAll(/[んン][ぁ-おァ-オゃ-よャ-ヨ]/g, individualKanaToRomaji);
-		groups[i] = groups[i].replaceAll(/[^ーっッ]/g, individualKanaToRomaji);
-		groups[i] = groups[i].replaceAll(/[ーっッ]/g, individualKanaToRomaji);
-		groups[i] = groups[i].replaceAll(/(\S)(\s*)ー/g, "$1$1$2").replaceAll(/[っッ](\s*)(\S)/g, "$1$2$2");
-		groups[i] = groups[i].replaceAll(/[っッ]\W*$/g, "`");
-	}
-	return groups.join('');
+	return str.split(/([^\u3040-\u30FF])/).map((group) => {
+		return group
+			.replaceAll(/[しじシジちぢチヂ][ゃゅょャュョ]/g, individualKanaToRomaji)
+			.replaceAll(/(?![しじシジちぢチヂ])[\u3040-\u30FF][ゃゅょャュョ]/g, individualKanaToRomaji)
+			.replaceAll(/[んン][ぁ-おァ-オゃ-よャ-ヨ]/g, individualKanaToRomaji)
+			.replaceAll(/[^ーっッ]/g, individualKanaToRomaji)
+			.replaceAll(/[ーっッ]/g, individualKanaToRomaji)
+			.replaceAll(/(\S)(\s*)ー/g, "$1$1$2").replaceAll(/[っッ](\s*)(\S)/g, "$1$2$2")
+			.replaceAll(/[っッ]\W*$/g, "`")
+	}).join('');
 }
 
 function individualKanaToRomaji(match, offset, string) {
-	let romaji = match;
-	if (/[しじシジちぢチヂ][ゃゅょャュョ]/.test(romaji)) {
-		romaji = romaji
+	if (/[しじシジちぢチヂ][ゃゅょャュョ]/.test(match)) {
+		match = match
 			.replace(/[しシ]/, 'sh').replace(/[ちチ]/, 'ch')
 			.replace(/[じジぢヂ]/, 'j')
 			.replace(/[ゃャ]/, 'a').replace(/[ゅュ]/, 'u').replace(/[ょョ]/, 'o');
-	} else if (/(?![しじシジちぢチヂ])[\u3040-\u30FF][ゃゅょャュョ]/.test(romaji)) {
-		romaji = romaji
+	} else if (/(?![しじシジちぢチヂ])[\u3040-\u30FF][ゃゅょャュョ]/.test(match)) {
+		match = match
 			.replace(/[きキ]/, 'k').replace(/[ぎギ]/, 'g')
 			.replace(/[にニ]/, 'n')
 			.replace(/[ひヒ]/, 'h').replace(/[びビ]/, 'b').replace(/[ぴピ]/, 'p')
 			.replace(/[みミ]/, 'm')
 			.replace(/[りリ]/, 'r')
 			.replace(/[ゃャ]/, 'ya').replace(/[ゅュ]/, 'yu').replace(/[ょョ]/, 'yo');
-	} else if (/[んン][ぁ-おァ-オゃ-よャ-ヨ]/.test(romaji)) {
-		romaji = romaji
+	} else if (/[んン][ぁ-おァ-オゃ-よャ-ヨ]/.test(match)) {
+		match = match
 			.replace(/[んン]/, "n'")
-	} else if (/[^ーっッ]/.test(romaji)) {
-		romaji = romaji
+	} else if (/[^ーっッ]/.test(match)) {
+		match = match
 			.replace(/[あア]/, 'a').replace(/[いイ]/, 'i').replace(/[うウ]/, 'u').replace(/[えエ]/, 'e').replace(/[おオ]/, 'o')
 			.replace(/[かカ]/, 'ka').replace(/[きキ]/, 'ki').replace(/[くク]/, 'ku').replace(/[けケ]/, 'ke').replace(/[こコ]/, 'ko')
 			.replace(/[がガ]/, 'ga').replace(/[ぎギ]/, 'gi').replace(/[ぐグ]/, 'gu').replace(/[げゲ]/, 'ge').replace(/[ごゴ]/, 'go')
@@ -56,10 +54,10 @@ function individualKanaToRomaji(match, offset, string) {
 			.replace(/[らラ]/, 'ra').replace(/[りリ]/, 'ri').replace(/[るル]/, 'ru').replace(/[れレ]/, 're').replace(/[ろロ]/, 'ro')
 			.replace(/[わワ]/, 'wa').replace(/[をヲ]/, 'wo')
 			.replace(/[んン]/, 'n');
-	} else if (/[ーっッ]/.test(romaji)) {
-		romaji = romaji
+	} else if (/[ーっッ]/.test(match)) {
+		match = match
 			.replace(/(.)\s*ー/, "$1$1")
-			.replace(/[っッ]\s*(.)/, "$1$1"); // Fix the parentheses thing
+			.replace(/[っッ]\s*(.)/, "$1$1");
 	}
-	return romaji;
+	return match;
 }
